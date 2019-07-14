@@ -82,18 +82,109 @@ example : (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) :=
                 )
         )
 
-example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) := sorry
-example : (∀ x, p x) →  ¬ (∃ x, ¬ p x) :=
-    assume h: ∀ x, p x,
-    assume hn: ∃ x, ¬ p x,
-    match hn with ⟨ w, hnw ⟩ :=
+-- right-to-left requires classical logic?
+example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) := 
+  iff.intro
+    (
+      assume h: ∀ x, p x,
+      assume hn: ∃ x, ¬ p x,
+      match hn with ⟨ w, hnw ⟩ :=
         absurd (h w) hnw
-    end
+      end
+    )
+    (
+      assume h: ¬ (∃ x, ¬ p x),
+      assume y: α,
+      show p y, from (
+        by_contradiction (
+          assume hy: ¬ p y,
+          have ∃ x, ¬ p x, from exists.intro y hy,
+          absurd this h
+        )
+      )
+    )
 
-example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) := sorry
-example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) := sorry
+-- right-to-left requires classical logic?
+example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
+  iff.intro
+    (
+      assume h: ∃ x, p x,
+      assume hq: ∀ x, ¬ p x,
+      match h with ⟨w, hw⟩ :=
+        absurd hw (hq w)
+      end
+    )
+    (
+      assume h: ¬ (∀ x, ¬ p x),
+      by_contradiction (
+        assume hnp: ¬ (∃ x, p x),
+        have ∀ x, ¬ p x, from (
+          assume y: α,
+          show ¬ p y, from (
+            assume hy: p y,
+            absurd (exists.intro y hy) hnp
+          )
+        ),
+        absurd this h
+      )
+    )
+
+example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
+  iff.intro
+    (
+      assume h: ¬ ∃ x, p x,
+      assume y: α,
+      assume hpy: p y,
+      have ∃ x, p x, from exists.intro y hpy,
+      absurd this h
+    )
+    (
+      assume h: ∀ x, ¬ p x,
+      assume he: ∃ x, p x,
+      match he with ⟨w, hw⟩ :=
+        absurd hw (h w)
+      end
+    )
 example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) := sorry
+example : (¬ ∀ x, p x) → (∃ x, ¬ p x) := sorry
+example : (∃ x, ¬ p x) → (¬ ∀ x, p x) :=
+  assume h: ∃ x, ¬ p x,
+  assume hp: ∀ x, p x,
+  match h with ⟨w, hw⟩ :=
+    absurd (hp w) hw
+  end
 
-example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
+
+example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
+  iff.intro
+  (
+    assume h: ∀ x, p x → r,
+    assume he: ∃ x, p x,
+    match he with ⟨w, hw⟩ :=
+      h w hw
+    end
+  )
+  (
+    assume h: (∃ x, p x) → r,
+    assume y: α,
+    assume hpy: p y,
+    show r, from h (exists.intro y hpy)
+  )
+
 example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
+example : (∃ x, p x → r) → (∀ x, p x) → r :=
+  assume h1: ∃ x, p x → r,
+  assume h2: ∀ x, p x,
+  match h1 with ⟨w, hw⟩ :=
+    hw (h2 w)
+  end
+example : ((∀ x, p x) → r) → (∃ x, p x → r) := sorry
+
 example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
+example : (∃ x, r → p x) → (r → ∃ x, p x) :=
+  assume h: ∃ x, r → p x,
+  assume hr: r,
+  match h with ⟨w, hw⟩ :=
+    exists.intro w (hw hr)
+  end
+example : (r → ∃ x, p x) → (∃ x, r → p x) := sorry

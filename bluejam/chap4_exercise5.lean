@@ -145,14 +145,32 @@ example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
         absurd hw (h w)
       end
     )
-example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) := sorry
-example : (¬ ∀ x, p x) → (∃ x, ¬ p x) := sorry
-example : (∃ x, ¬ p x) → (¬ ∀ x, p x) :=
-  assume h: ∃ x, ¬ p x,
-  assume hp: ∀ x, p x,
-  match h with ⟨w, hw⟩ :=
-    absurd (hp w) hw
-  end
+
+-- left to right uses classical logic. But, it could be better...?
+example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) :=
+  iff.intro
+    (
+      assume h: ¬ ∀ x, p x,
+      by_contradiction (
+        assume hn: ¬ ∃ x, ¬ p x,
+        have ∀ x, p x, from (
+          assume y: α,
+          show p y, from by_contradiction (
+            assume hp: ¬ p y,
+            have ∃ x, ¬ p x, from exists.intro y hp,
+            absurd this hn
+          )
+        ),
+        absurd this h
+      )
+    )
+    (
+      assume h: ∃ x, ¬ p x,
+      assume hp: ∀ x, p x,
+      match h with ⟨w, hw⟩ :=
+        absurd (hp w) hw
+      end
+    )
 
 
 example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=

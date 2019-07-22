@@ -198,11 +198,37 @@ example : (∃ x, p x → r) → (∀ x, p x) → r :=
   end
 example : ((∀ x, p x) → r) → (∃ x, p x → r) := sorry
 
-example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
-example : (∃ x, r → p x) → (r → ∃ x, p x) :=
-  assume h: ∃ x, r → p x,
-  assume hr: r,
-  match h with ⟨w, hw⟩ :=
-    exists.intro w (hw hr)
-  end
-example : (r → ∃ x, p x) → (∃ x, r → p x) := sorry
+
+-- right-to-left requires classical logic?
+example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
+  iff.intro
+    (
+      assume h: ∃ x, r → p x,
+      assume hr: r,
+      match h with ⟨w, hw⟩ :=
+        exists.intro w (hw hr)
+      end
+    )
+    (
+      assume h: (r → ∃ x, p x),
+      by_cases
+        (
+          assume hr: r,
+          have ∃ x, p x, from h hr,
+          match this with ⟨ w, hw ⟩ :=
+            exists.intro w
+              (
+                assume hr2: r,
+                show p w, from hw
+              )
+          end
+        )
+        (
+          assume hnr: ¬ r,
+          have r → p a, from (
+            assume hr: r,
+            absurd hr hnr
+          ),
+          exists.intro a this
+        )
+    )

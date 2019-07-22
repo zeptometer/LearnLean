@@ -147,7 +147,7 @@ example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
     )
 
 -- left to right uses classical logic. But, it could be better...?
-example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) :=
+theorem not_forall_exists_not : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) :=
   iff.intro
     (
       assume h: ¬ ∀ x, p x,
@@ -189,15 +189,37 @@ example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
     show r, from h (exists.intro y hpy)
   )
 
-example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
-example : (∃ x, p x → r) → (∀ x, p x) → r :=
-  assume h1: ∃ x, p x → r,
-  assume h2: ∀ x, p x,
-  match h1 with ⟨w, hw⟩ :=
-    hw (h2 w)
-  end
-example : ((∀ x, p x) → r) → (∃ x, p x → r) := sorry
-
+-- right-to-left requires classical logic?
+example : (∃ x, p x → r) ↔ (∀ x, p x) → r :=
+  iff.intro
+    (
+      assume h1: ∃ x, p x → r,
+      assume h2: ∀ x, p x,
+      match h1 with ⟨w, hw⟩ :=
+        hw (h2 w)
+      end
+    )
+    (
+      assume h: (∀ x, p x) → r,
+        by_cases
+          (
+            assume hp: ∀ x, p x,
+            have r, from h hp,
+            have p a → r, from (assume hp: p a, ‹ r › ),
+            exists.intro a this
+          )
+          (
+            assume hnp: ¬ ∀ x, p x,
+            have ∃ x, ¬ p x, from (not_forall_exists_not α p).mp hnp,
+            match this with ⟨w, hnw⟩ :=
+              have p w → r, from (
+                assume hw: p w,
+                absurd hw hnw
+              ),
+              exists.intro w this
+            end
+          )
+    )
 
 -- right-to-left requires classical logic?
 example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=

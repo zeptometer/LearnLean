@@ -122,11 +122,8 @@ example : (∃ x : subtype p, true) → (∀ x : subtype p, ∀ y : subtype p, �
         match (h₃ y) with ⟨iy, hiy⟩ :=
             match (h x iy) with ⟨y₂, hy₂⟩ :=
                 match hy₂ with ⟨z, hz⟩ :=
-                    have y * (iy * y₂) = y, from (hz.left.left y).right,
-                    have (y * iy) * y₂ = y, from (eq.symm (h₁ y iy y₂)) ▸ this,
-                    have (y * iy) * y₂ = y₂, from (hiy.left y₂).left,
-                    have y₂ = y, from eq.trans (eq.symm ‹(y * iy) * y₂ = y₂›) ‹(y * iy) * y₂ = y›,
-                    have x * y = z, from this ▸ hz.right,
+                    have ↑y = ↑y₂, from double_inverse y iy y₂ (⟨hiy, hz.left⟩),
+                    have x * y = z, from eq.symm this ▸ hz.right,
                     show ∃ z: β, x * y = z, from exists.intro z this
                 end
             end

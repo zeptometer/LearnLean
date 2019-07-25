@@ -228,3 +228,26 @@ example : (p → q) → (¬q → ¬p) :=
    assume hnq: ¬ q,
    assume hp: p,
    absurd (h hp) hnq
+
+-- these require classical reasoning
+example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := sorry
+example : ¬(p ∧ q) → ¬p ∨ ¬q :=
+    assume h: ¬ (p ∧ q),
+    by_cases
+        (
+            assume hp: p,
+            have ¬ q, from (
+                assume hq: q,
+                absurd (and.intro hp hq) h
+            ),
+            or.intro_right (¬ p) this
+        )
+        (
+            assume hnp: ¬ p,
+            or.intro_left (¬ q) hnp
+        )
+example : ¬(p → q) → p ∧ ¬q := sorry
+example : (p → q) → (¬p ∨ q) := sorry
+example : (¬q → ¬p) → (p → q) := sorry
+example : p ∨ ¬p := sorry
+example : (((p → q) → p) → p) := sorry

@@ -317,4 +317,21 @@ example : p ∨ ¬p :=
     by_cases
         (assume : p, or.intro_left (¬ p) this)
         (assume : ¬ p, or.intro_right p this)
-example : (((p → q) → p) → p) := sorry
+example : (((p → q) → p) → p) :=
+    assume h : (p → q) → p,
+    by_cases
+        (
+            assume : p → q,
+            show p, from h this
+        )
+        (
+            assume : ¬ (p → q),
+            show p, from by_contradiction (
+                assume : ¬ p,
+                have p → q, from (
+                    assume : p,
+                    absurd this ‹¬ p›
+                ),
+                absurd this ‹¬ (p → q)›
+            )
+        )

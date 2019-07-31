@@ -21,27 +21,22 @@ example : p ∧ q ↔ q ∧ p :=
 begin
   apply iff.intro,
     intro h,
-    apply and.intro,
-      exact h.right,
-    exact h.left,
+    cases h with hp hq,
+    constructor, repeat { assumption },
   intro h,
-  apply and.intro,
-    exact h.right,
-  exact h.left
+  cases h with hq hp,
+  constructor, repeat { assumption }
 end
+
 example : p ∨ q ↔ q ∨ p :=
 begin
   apply iff.intro,
     intro h,
-    apply or.elim h,
-      intro hp,
-      exact or.intro_right q hp,
-    intro hq,
-    exact or.intro_left p hq,
+    cases h with hp hq,
+      right, exact hp,
+    left, exact hq,
   intro h,
-  apply or.elim h,
-    intro hq,
-    exact or.intro_right p hq,
-  intro hp,
-  exact or.intro_left q hp
+  cases h with hq hp,
+    right, exact hq,
+  left, exact hp
 end

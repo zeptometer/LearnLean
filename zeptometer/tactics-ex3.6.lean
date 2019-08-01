@@ -123,8 +123,34 @@ example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := begin
 end
 
 -- other properties
-example : (p → (q → r)) ↔ (p ∧ q → r) := sorry
-example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := sorry
+example : (p → (q → r)) ↔ (p ∧ q → r) := begin
+    split,
+    intros h i,
+    simp *,
+    intros h i j,
+    simp *
+end
+
+example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := begin
+    split,
+    show ((p ∨ q) → r) → (p → r) ∧ (q → r), begin
+        intro a,
+        split,
+        intro b,
+        simp *,
+        intro b,
+        simp *,
+    end,
+    show (p → r) ∧ (q → r) → ((p ∨ q) → r), begin
+        intros a b,
+        have al : p → r,
+        from and.left a,
+        have ar : q → r,
+        from and.right a,
+        exact or.elim b al ar,
+    end
+end
+
 example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := sorry
 example : ¬p ∨ ¬q → ¬(p ∧ q) := sorry
 example : ¬(p ∧ ¬p) := sorry

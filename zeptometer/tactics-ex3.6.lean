@@ -96,7 +96,31 @@ example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := begin
     exact (and.right a),
 end
 
-example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := sorry
+example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := begin
+    split,
+    intros,
+    split,
+    cases a with b c,
+    apply or.inl,
+    assumption,
+    apply or.inr,
+    apply and.left,
+    assumption,
+    cases a with b c,
+    apply or.inl,
+    assumption,
+    exact or.inr (and.right c),
+    intro a,
+    have h : p ∨ q,
+    from and.left a,
+    have i : p ∨ r,
+    from and.right a,
+    cases h with b c,
+    exact or.inl b,
+    cases i with d e,
+    exact or.inl d,
+    exact or.inr (and.intro c e)
+end
 
 -- other properties
 example : (p → (q → r)) ↔ (p ∧ q → r) := sorry
@@ -113,10 +137,24 @@ example : ¬(p ↔ ¬p) := sorry
 example : (p → q) → (¬q → ¬p) := sorry
 
 -- these require classical reasoning
+open classical
+
 example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := sorry
 example : ¬(p ∧ q) → ¬p ∨ ¬q := sorry
 example : ¬(p → q) → p ∧ ¬q := sorry
 example : (p → q) → (¬p ∨ q) := sorry
 example : (¬q → ¬p) → (p → q) := sorry
-example : p ∨ ¬p := sorry
-example : (((p → q) → p) → p) := sorry
+example : p ∨ ¬p := begin
+    exact em p
+end
+
+example : (((p → q) → p) → p) := 
+    λ a : (p → q) → p,
+    begin
+        have h : p ∨ ¬ p, from em p,
+        cases h with hl hr,
+        show p,
+            from hl,
+        show p,
+            from a (λb : p, false.elim (hr b))
+    end

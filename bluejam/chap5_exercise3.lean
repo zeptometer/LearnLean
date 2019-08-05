@@ -40,3 +40,51 @@ begin
     right, exact hq,
   left, exact hp
 end
+
+-- associativity of ∧ and ∨
+example : (p ∧ q) ∧ r ↔ p ∧ (q ∧ r) :=
+begin
+  apply iff.intro,
+  {
+    intro h,
+    cases h with hpq hr,
+    have hqr : q ∧ r := ⟨ hpq.right, hr ⟩,
+    show p ∧ (q ∧ r),
+      { split, apply hpq.left, assumption }
+  },
+  intro h,
+  cases h with hp hqr,
+  split,
+  { exact ⟨ hp, hqr.left ⟩ },
+  exact hqr.right
+end
+example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
+begin
+  apply iff.intro,
+  {
+    intro h,
+    cases h with hpq hr,
+    {
+      cases hpq with hp hq,
+      { apply or.intro_left, assumption},
+      apply or.intro_right,
+      exact or.intro_left r hq
+    },
+    apply or.intro_right,
+    show q ∨ r,
+      exact or.intro_right q hr
+  },
+  intro h,
+  cases h with hp hqr,
+  {
+    apply or.intro_left,
+    exact or.intro_left q hp
+  },
+  cases hqr with hq hr,
+  {
+    apply or.intro_left,
+    exact or.intro_right p hq
+  },
+  apply or.intro_right,
+  assumption
+end

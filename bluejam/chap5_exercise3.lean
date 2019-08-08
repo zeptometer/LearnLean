@@ -48,15 +48,13 @@ begin
   {
     intro h,
     cases h with hpq hr,
-    have hqr : q ∧ r := ⟨ hpq.right, hr ⟩,
-    show p ∧ (q ∧ r),
-      { split, apply hpq.left, assumption }
+    cases hpq with hp hq,
+    repeat { split; try { assumption } }
   },
   intro h,
   cases h with hp hqr,
-  split,
-  { exact ⟨ hp, hqr.left ⟩ },
-  exact hqr.right
+  cases hqr with hq hr,
+  repeat { split; try { assumption } }
 end
 example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
 begin

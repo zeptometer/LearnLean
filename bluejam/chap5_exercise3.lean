@@ -86,3 +86,45 @@ begin
   apply or.intro_right,
   assumption
 end
+
+-- distributivity
+example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) :=
+begin
+  apply iff.intro,
+    intro h,
+    cases h with hp hqr,
+    cases hqr with hq hr,
+      apply or.intro_left,
+      split,
+      repeat { assumption },
+    apply or.intro_right,
+    split,
+    repeat { assumption },
+  intro h,
+  cases h with hpq hpr,
+    split,
+      exact hpq.left,
+    exact or.intro_left r hpq.right,
+  split,
+    exact hpr.left,
+  exact or.intro_right q hpr.right
+end
+example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) :=
+begin
+  apply iff.intro,
+    intro h,
+    cases h with hp hqr,
+      { split; apply or.intro_left; assumption },
+    cases hqr with hq hr,
+    { split; apply or.intro_right; assumption },
+  intro h,
+  cases h with hpq hpr,
+  cases hpq with hp hq,
+    apply or.intro_left,
+    assumption,
+  cases hpr with hp hr,
+    apply or.intro_left,
+    assumption,
+  apply or.intro_right,
+  split; assumption
+end

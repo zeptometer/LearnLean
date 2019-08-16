@@ -118,6 +118,68 @@ begin
   simp * at *
 end
 
-example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
-example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
-example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
+example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
+begin
+  apply iff.intro,
+    intros h1 h2,
+    cases h2 with w hw,
+    apply h1,
+    exact hw,
+  intros h x hx,
+  apply h,
+  existsi x,
+  assumption
+end
+example : (∃ x, p x → r) ↔ (∀ x, p x) → r :=
+begin
+  apply iff.intro,
+    intros h1 h2,
+    cases h1 with w hw,
+    apply hw,
+    simp [h2],
+  intros h,
+  apply by_cases,
+    intros h1,
+    have : r, from h h1,
+    existsi a,
+    simp [h1 a, this],
+  intros h1,
+  have : ∃ x, ¬ p x, from (
+    begin
+      apply by_contradiction,
+      intros h2,
+      have : ∀ x, p x, from (
+        begin
+          intros,
+          apply by_contradiction,
+          intro h3,
+          have : ∃ x, ¬ p x, from exists.intro x h3,
+          contradiction
+        end
+      ),
+      contradiction
+    end
+  ),
+  cases this with w hw,
+  existsi w,
+  simp * at *,
+end
+example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
+begin
+  apply iff.intro,
+    intros h hr,
+    simp [hr] at h,
+    assumption,
+  intros h,
+  apply by_cases,
+    intros hr,
+    have hp : ∃ x, p x, from h hr,
+    cases hp with w hw,
+    apply exists.intro,
+    intros,
+    exact hw,
+  intros hnr,
+  simp * at *,
+  existsi a,
+  assumption
+end

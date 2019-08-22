@@ -319,6 +319,8 @@ begin
   intro,
   apply by_contradiction,
   intro,
-  have : p → q, from (assume hp: p, absurd hp a_2),
+  have h : p → q,
+    intros,
+    contradiction,
   contradiction
 end

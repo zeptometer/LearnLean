@@ -219,17 +219,23 @@ example : ¬(p ↔ ¬p) :=
 begin
   intro,
   cases a,
-  have hnp: ¬ p, from (
-    assume hp: p,
-    absurd hp (a_mp hp)
-  ),
-  have hp, from a_mpr hnp,
+  have hnp: ¬ p,
+    intros hp,
+    have : ¬ p,
+      apply a_mp,
+      assumption,
+    contradiction,
+  have : p,
+    apply a_mpr,
+    assumption,
   contradiction
 end
 example : (p → q) → (¬q → ¬p) :=
 begin
   intros hpq hnq hp,
-  have hq, from hpq hp,
+  have : q,
+    apply hpq,
+    assumption,
   contradiction
 end
 
@@ -245,7 +251,9 @@ begin
   right,
   intro hp,
   cases h hp with hr hs,
-    have hpr : p → r, from (assume p, hr),
+    have hpr : p → r,
+      intros,
+      assumption,
     contradiction,
   assumption
 end
@@ -256,7 +264,8 @@ begin
     intro hp,
     right,
     intro hq,
-    have : p ∧ q, from and.intro hp hq,
+    have : p ∧ q,
+      split; assumption,
     contradiction,
   intro hnp,
   left,
@@ -270,11 +279,15 @@ begin
       intro hp,
       assumption,
     intro hnp,
-    have : p → q, from (assume hp: p, absurd hp hnp),
+    have : p → q,
+      intros,
+      contradiction,
     contradiction,
   apply not.intro,
   intro hq,
-  have : p → q, from (assume p, hq),
+  have : p → q,
+    intros,
+    assumption,
   contradiction
 end
 example : (p → q) → (¬p ∨ q) :=
@@ -293,7 +306,9 @@ begin
   intros,
   apply by_contradiction,
   intro hnq,
-  have : ¬ p, from a hnq,
+  have : ¬ p,
+    apply a,
+    assumption,
   contradiction
 end
 example : p ∨ ¬p :=

@@ -1,3 +1,4 @@
+
 open classical
 variables (α : Type) (p q : α → Prop)
 variable r : Prop
@@ -24,7 +25,8 @@ begin
     intro hnr,
     left,
     intro,
-    have : p x ∨ r, from h x,
+    have : p x ∨ r,
+        apply h,
     cases this,
       assumption,
     contradiction,

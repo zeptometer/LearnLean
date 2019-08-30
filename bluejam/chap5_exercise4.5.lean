@@ -1,3 +1,4 @@
+    
 open classical
 
 variables (α : Type) (p q : α → Prop)
@@ -63,7 +64,9 @@ begin
   intros,
   apply by_contradiction,
   intros,
-  have : ∃ x, ¬ p x, from exists.intro x a_2,
+  have : ∃ x, ¬ p x,
+    apply exists.intro,
+    apply a_2,
   contradiction
 end
 example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
@@ -76,22 +79,23 @@ begin
   intros h,
   apply by_contradiction,
   intros hn,
-  have : ∀ x, ¬ p x, from (
-    assume y : α,
-    begin
-      apply not.intro,
-      intros hy,
-      have : ∃ x, p x, from exists.intro y hy,
-      contradiction
-    end
-  ),
+  have : ∀ x, ¬ p x,
+    intros y,
+    apply not.intro,
+    intros hy,
+    have : ∃ x, p x,
+      apply exists.intro,
+      assumption,
+    contradiction,
   contradiction
 end
 example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
 begin
   apply iff.intro,
     intros h x hp,
-    have : ∃ x, p x, from exists.intro x hp,
+    have : ∃ x, p x,
+      apply exists.intro,
+      assumption,
     contradiction,
   intros h hp,
   cases hp with x hx,
@@ -103,15 +107,14 @@ begin
     intros h,
     apply by_contradiction,
     intros hn,
-    have : ∀ x, p x, from (
-      assume y : α,
-      begin
-        apply by_contradiction,
-        intro hny,
-        have : ∃ x, ¬ p x, from (exists.intro y hny),
-        contradiction
-      end
-    ),
+    have : ∀ x, p x,
+      intros y,
+      apply by_contradiction,
+      intro hny,
+      have : ∃ x, ¬ p x,
+        apply exists.intro,
+        assumption,
+      contradiction,
     contradiction,
   intros h hn,
   cases h with w hw,
@@ -140,26 +143,28 @@ begin
   intros h,
   apply by_cases,
     intros h1,
-    have : r, from h h1,
+    have : r,
+      apply h,
+      assumption,
     existsi a,
     simp [h1 a, this],
   intros h1,
-  have : ∃ x, ¬ p x, from (
-    begin
+  have : ∃ x, ¬ p x,
+    apply by_contradiction,
+    intros h2,
+    have : ∀ x, p x,
+      intros,
+        intros,
+        apply by_contradiction,
+        intro h3,
+        have : ∃ x, ¬ p x,
+          apply exists.intro,
+          assumption,
+        contradiction,  
+      intros,
       apply by_contradiction,
-      intros h2,
-      have : ∀ x, p x, from (
-        begin
-          intros,
-          apply by_contradiction,
-          intro h3,
-          have : ∃ x, ¬ p x, from exists.intro x h3,
-          contradiction
-        end
-      ),
-      contradiction
-    end
-  ),
+      intro h3,
+      contradiction,
   cases this with w hw,
   existsi w,
   simp * at *,
@@ -173,7 +178,9 @@ begin
   intros h,
   apply by_cases,
     intros hr,
-    have hp : ∃ x, p x, from h hr,
+    have hp : ∃ x, p x,
+      apply h,
+      assumption,
     cases hp with w hw,
     apply exists.intro,
     intros,

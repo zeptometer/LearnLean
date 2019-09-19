@@ -2,7 +2,9 @@ universe u
 
 namespace hidden
 
-inductive partial_function (α β: Type u)
-| mk {} : (α → option β) → partial_function
+variables (α β γ : Type u)
+
+def partial_composite : (α → option β) → (β → option γ) → (α → option γ)
+:= sorry
 
 end hidden

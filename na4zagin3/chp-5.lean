@@ -131,6 +131,16 @@ begin
     cases (hnp hp),
   apply hq,
 end
+
+example : ¬(p ↔ ¬p) :=
+begin
+  intro heqpnp,
+  cases heqpnp with hpnp hnpp,
+  apply hpnp;
+    apply hnpp;
+      intros p;
+        apply hpnp; assumption,
+end
 end sec_3_redo
 
 example (p q r : Prop) (hp : p) :

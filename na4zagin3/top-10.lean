@@ -1,3 +1,4 @@
+-- LEAN (*
 definition prefix_sum : ℕ → list ℕ → list ℕ
 | sum [] := [sum]
 | sum (head :: tail) := sum :: (prefix_sum (sum + head) tail).
@@ -57,3 +58,28 @@ begin
   intros l1 l2,
   by rewrite [←generic_lemma],
 end.
+/- Coq *)
+unfold task.
+assert (plus_list_nil_r : forall l,
+  plus_list l nil = nil). {
+  intro l; case l; reflexivity.
+}
+assert (generic : forall l1 l2, forall n m,
+  prefix_sum (n + m) (plus_list l1 l2) =
+  plus_list (prefix_sum n l1) (prefix_sum m l2)). {
+  intro l1. induction l1.
+    intro l2. induction l2; intros n m; reflexivity.
+  intro l2. case l2.
+    intros n m.
+    simpl.
+    rewrite plus_list_nil_r.
+    reflexivity.
+  intros x l2' n m.
+  simpl.
+  rewrite <- IHl1.
+  rewrite PeanoNat.Nat.add_shuffle1.
+  reflexivity.
+}
+intros l1 l2.
+rewrite <- generic.
+reflexivity. (* -/ -- *)

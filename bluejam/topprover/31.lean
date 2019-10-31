@@ -26,33 +26,33 @@ end
 
 lemma binom_exceeds: ∀ (n : ℕ), ∀ (k : ℕ), binom n (n + 1 + k) = 0 :=
 begin
-    /-
-    intros,
-    induction k,
-        induction n,
-            simp [binom],
-        simp * at *,
-        simp [binom],
-    -/
-    /-
-    intros,
+    intro n,
     induction n,
-        induction k,
-            simp *,
-            simp [binom],
-        simp * at *,
-        assumption,
-    induction k,
-        simp * at *,
-        simp [binom],
-        rw n_ih,
-        simp *,
-    -/
+        simp [is_zero],
+    intros,
+    rw [←nat.add_one],
+    calc  binom (n_n + 1) ((n_n + 1 + 1) + k)
+        = binom (n_n + 1) ((n_n + 1) + (1 + k)) : by rw [nat.add_assoc]
+    ... = binom (n_n + 1) ((n_n + 1) + (k + 1))
+            : by rw [nat.add_comm 1 k]
+    ... = binom (n_n + 1) ((n_n + 1 + k) + 1)
+            : by rw [←nat.add_assoc]
+    ... = binom n_n (n_n + 1 + k + 1) + binom n_n (n_n + 1 + k)
+            : by unfold binom
+    ... = binom n_n (n_n + 1 + k + 1) + 0 : by rw [n_ih]
+    ... = binom n_n (n_n + 1 + k + 1) : by rw [nat.add_zero]
+    ... = binom n_n (n_n + 1 + (k + 1)) : by rw [nat.add_assoc]
+    ... = 0 : by rw [n_ih]
 end
 
-lemma binom_sum_continue: ∀ n, binom_sum n (n + 1) = binom_sum n n := sorry
+lemma binom_sum_continue: ∀ n, binom_sum n (n + 1) = binom_sum n n :=
+begin
+    intros,
+    simp [binom_sum, binom_exceeds n 0]
+end
 
-lemma binom_sum_split: ∀ (n: ℕ), ∀ (k: ℕ), binom_sum (n + 1) (k + 1) = binom_sum n (k + 1) + binom_sum n k :=
+lemma binom_sum_split: ∀ (n: ℕ), ∀ (k: ℕ), binom_sum (n + 1) (k + 1)
+    = binom_sum n (k + 1) + binom_sum n k :=
 begin
     intros,
     induction n,

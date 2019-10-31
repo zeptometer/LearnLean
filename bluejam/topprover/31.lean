@@ -31,24 +31,21 @@ begin
         simp [is_zero],
     intros,
     rw [←nat.add_one],
-    calc  binom (n_n + 1) ((n_n + 1 + 1) + k)
-        = binom (n_n + 1) ((n_n + 1) + (1 + k)) : by rw [nat.add_assoc]
-    ... = binom (n_n + 1) ((n_n + 1) + (k + 1))
-            : by rw [nat.add_comm 1 k]
-    ... = binom (n_n + 1) ((n_n + 1 + k) + 1)
-            : by rw [←nat.add_assoc]
+    calc  binom (n_n + 1) (n_n + 1 + 1 + k)
+        = binom (n_n + 1) ((n_n + 1 + k) + 1)
+            : by simp [nat.add_assoc, nat.add_comm]
     ... = binom n_n (n_n + 1 + k + 1) + binom n_n (n_n + 1 + k)
-            : by unfold binom
+            : by rw [binom]
     ... = binom n_n (n_n + 1 + k + 1) + 0 : by rw [n_ih]
-    ... = binom n_n (n_n + 1 + k + 1) : by rw [nat.add_zero]
-    ... = binom n_n (n_n + 1 + (k + 1)) : by rw [nat.add_assoc]
+    ... = binom n_n (n_n + 1 + (k + 1))
+            : by simp [nat.add_zero, nat.add_assoc]
     ... = 0 : by rw [n_ih]
 end
 
 lemma binom_sum_continue: ∀ n, binom_sum n (n + 1) = binom_sum n n :=
 begin
     intros,
-    simp [binom_sum, binom_exceeds n 0],
+    simp [binom_sum, binom_exceeds n 0]
 end
 
 lemma binom_sum_split: ∀ (n: ℕ), ∀ (k: ℕ), binom_sum (n + 1) (k + 1)

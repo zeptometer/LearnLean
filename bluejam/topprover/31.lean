@@ -48,20 +48,36 @@ end
 lemma binom_sum_continue: ∀ n, binom_sum n (n + 1) = binom_sum n n :=
 begin
     intros,
-    simp [binom_sum, binom_exceeds n 0]
+    simp [binom_sum, binom_exceeds n 0],
 end
 
 lemma binom_sum_split: ∀ (n: ℕ), ∀ (k: ℕ), binom_sum (n + 1) (k + 1)
     = binom_sum n (k + 1) + binom_sum n k :=
 begin
-    intros,
-    induction n,
-        induction k,
+    intro n, induction n,
+        intro k, induction k,
             simp [binom, binom_sum],
         rw [binom_sum_zero] at *,
         simp * at *,
         assumption,
-    sorry
+    intro k, induction k,
+        simp [binom_sum, binom],
+    calc  binom_sum (nat.succ n_n + 1) (nat.succ k_n + 1)
+        = binom_sum (nat.succ n_n + 1) (nat.succ k_n)
+          + binom (nat.succ n_n + 1) (nat.succ k_n + 1)
+            : by rw binom_sum
+    ... = binom_sum (nat.succ n_n) (k_n + 1) + binom_sum (nat.succ n_n) k_n
+          + binom (nat.succ n_n + 1) (nat.succ k_n + 1)
+            : by rw k_ih
+    ... = (binom_sum (nat.succ n_n) (k_n + 1) + binom_sum (nat.succ n_n) k_n)
+          + binom (nat.succ n_n) (nat.succ k_n + 1) + binom (nat.succ n_n) (nat.succ k_n)
+            : by simp [binom]
+    ... = (binom_sum (nat.succ n_n) (k_n + 1) + binom (nat.succ n_n) (nat.succ k_n + 1))
+          + (binom_sum (nat.succ n_n) k_n) + binom (nat.succ n_n) (nat.succ k_n)
+            : by simp [nat.add_assoc, nat.add_comm]
+    ... = binom_sum (nat.succ n_n) (nat.succ k_n + 1)
+           + binom_sum (nat.succ n_n) (nat.succ k_n)
+            : by simp [binom_sum]
 end
 
 example: ∀ (n: ℕ), binom_sum n n = 2^n :=

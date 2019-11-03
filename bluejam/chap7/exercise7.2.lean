@@ -1,5 +1,4 @@
-namespace hidden7
-
+namespace hidden
 universes u v
 
 inductive list (α : Type u)

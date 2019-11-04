@@ -119,7 +119,7 @@ end
 
 theorem dist_mul (m n k : nat) : m * k + n * k = (m + n) * k :=
 begin
-    simp [mul_comm, mul_dist m n k],
+    simp [mul_comm],
     rw ←mul_dist,
     simp [mul_comm]
 end

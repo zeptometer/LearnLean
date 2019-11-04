@@ -124,6 +124,30 @@ begin
     simp [mul_comm]
 end
 
+instance : has_pow nat nat := has_pow.mk pow
+
+theorem pow_succ (m n : nat) : m ^ (succ n) = m ^ n * m := rfl
+theorem pow_zero (m : nat) : m ^ zero = (succ zero) := rfl
+
+theorem pow_mul (m n k : nat) : m ^ n * m ^ k = m ^ (n + k) :=
+begin
+    induction k,
+        simp [add_zero, pow_zero, mul_one],
+    rw [pow_succ, ←mul_assoc],
+    rw k_ih,
+    rw [←pow_succ],
+    rw [add_succ]
+end
+
+theorem pow_pow (m n k : nat) : (m ^ n) ^ k = m ^ (n * k) :=
+begin
+    induction k,
+        simp [mul_zero, pow_zero],
+    simp [pow_succ],
+    rw k_ih,
+    simp [pow_mul, mul_succ]
+end
+
 end nat
 
 end hidden

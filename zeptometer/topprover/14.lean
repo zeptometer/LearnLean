@@ -130,7 +130,7 @@ lemma odd_times_odd_is_odd (n m : ℕ) : odd(n) → odd(m) → odd(n * m) := beg
     assumption
 end
 
-example : ∀n, even n ↔ even (n * n) := begin
+theorem evenness_is_idempotent : ∀n, even n ↔ even (n * n) := begin
     intro n,
     apply iff.intro,
         intro e_n,
@@ -148,4 +148,44 @@ example : ∀n, even n ↔ even (n * n) := begin
         apply not_even_and_odd,
         assumption,
         assumption
+end
+
+lemma even_is_0_in_mod2 (n : ℕ) : even n → mod2 n = 0 := begin
+    intro e_n,
+    induction e_n,
+    simp [mod2],
+    rw add_comm,
+    simp [mod2],
+    rw e_n_ih,
+    simp [mod2]
+end
+
+lemma odd_is_1_in_mod2 (n : ℕ) : odd n → mod2 n = 1 := begin
+    intro o_n,
+    induction o_n,
+    simp [mod2],
+    have p : mod2 o_n_n = 0 := begin
+        apply even_is_0_in_mod2,
+        assumption
+    end,
+    rw p,
+    simp [mod2]
+end
+
+theorem multiplication_in_f2_is_idempotent(n : ℕ) : mod2 n = mod2 (n * n) := begin
+    have n_is_even_or_odd : even n ∨ odd n := by apply even_or_odd,
+    cases n_is_even_or_odd,
+        have e_n_sq : even (n * n) := begin
+            apply (iff.elim_left (evenness_is_idempotent n)),
+            assumption
+        end,
+        have mod2_n_0 : mod2 n = 0 := even_is_0_in_mod2 n n_is_even_or_odd,
+        have mod2_n_sq_0 : mod2 (n * n) = 0 := even_is_0_in_mod2 (n * n) e_n_sq,
+        rw mod2_n_0,
+        rw mod2_n_sq_0,
+    have o_n_sq : odd(n * n) := odd_times_odd_is_odd n n n_is_even_or_odd n_is_even_or_odd,
+    have mod2_n_1 : mod2 n = 1 := odd_is_1_in_mod2 n n_is_even_or_odd,
+    have mod2_n_sq_1 : mod2 (n * n) = 1 := odd_is_1_in_mod2 (n * n) o_n_sq,
+    rw mod2_n_1,
+    rw mod2_n_sq_1
 end

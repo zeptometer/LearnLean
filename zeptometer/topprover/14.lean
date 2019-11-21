@@ -41,7 +41,12 @@ lemma not_even_and_odd : ∀n, even n → odd n → false := begin
     intro o_e_2,
     cases o_e_2,
     cases o_e_2_a,
-    
+    simp [nat.add] at *,
+    induction o_e_2_a,
+    apply e_n_ih,
+    apply odd.odd_succ,
+    assumption,
+    assumption
 end
 
 lemma even_plus_even_is_even : ∀n, even n → ∀m, even m → even (n + m) := begin
@@ -83,6 +88,48 @@ lemma even_times_is_even : ∀n, even n → ∀m, even (n * m) := begin
     assumption
 end
 
+lemma even_plus_odd_is_odd(n m : ℕ) : even n → odd m → odd (n + m) := begin
+    intro e_n,
+    induction e_n,
+        intro,
+        simp [nat.add],
+        assumption,
+    intro o_m,
+    have comm1 : e_n_n + 2 = 2 + e_n_n := nat.add_comm e_n_n 2,
+    have comm : e_n_n + 2 + m = nat.succ(nat.succ(e_n_n + m)) := calc
+        e_n_n + 2 + m = 2 + e_n_n + m : by rw comm1
+        ...           = 2 + (e_n_n + m) : by rw nat.add_assoc
+        ...           = nat.succ (nat.succ (e_n_n + m)) : begin
+            rw nat.succ_add,
+            congr,
+            apply one_add
+        end,
+    rw comm,
+    apply odd.odd_succ,
+    induction o_m,
+    have comm2 : (e_n_n + (o_m_n + 1)) = succ (e_n_n + o_m_n) := calc
+        (e_n_n + (o_m_n + 1)) = e_n_n + (succ o_m_n) : by rw nat.add_succ
+        ...                   = succ (e_n_n + o_m_n) : by rw nat.add_succ,
+    rw comm2,
+    apply even.even_succ,
+    apply even_plus_even_is_even,
+    assumption,
+    assumption
+end
+
+lemma odd_times_odd_is_odd (n m : ℕ) : odd(n) → odd(m) → odd(n * m) := begin
+    intro n,
+    induction n,
+    intro o_m,
+    rw right_distrib,
+    simp,
+    rw add_comm,
+    apply even_plus_odd_is_odd,
+    apply even_times_is_even,
+    assumption,
+    assumption
+end
+
 example : ∀n, even n ↔ even (n * n) := begin
     intro n,
     apply iff.intro,
@@ -93,5 +140,12 @@ example : ∀n, even n ↔ even (n * n) := begin
     cases n_e_o,
         intros,
         assumption,
-    
+        have n_e_o_sq : odd (n * n) := begin
+            apply odd_times_odd_is_odd; assumption
+        end,
+        intro e_n_sq,
+        apply false.elim,
+        apply not_even_and_odd,
+        assumption,
+        assumption
 end

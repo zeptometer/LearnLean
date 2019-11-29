@@ -9,17 +9,7 @@ inductive three
 
 lemma two_has_two_elements (a b c: two): a = b ∨ b = c ∨ c = a :=
 begin
-    cases a,
-        cases b,
-            left; refl,
-        cases c,
-            right, right, refl,
-        right, left, refl,
-    cases b,
-        cases c,
-            right, left, refl,
-        right, right, refl,
-    left, refl,
+    cases a; cases b; cases c; repeat {refl <|> {left, refl} <|> right },
 end
 
 example : two ≠ three :=

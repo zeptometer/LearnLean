@@ -5,7 +5,7 @@ inductive bin : ℕ → Prop
 
 definition is_expressible_in_binrary_notation := bin
 
-example : ∀ n, bin n := begin
+example : ∀ n, is_expressible_in_binrary_notation n := begin
     intro,
     induction n,
     apply bin.bin_epsilon,

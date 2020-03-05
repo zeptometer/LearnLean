@@ -1,7 +1,20 @@
 variable f : nat -> bool.
 
 def downward_closed :=
-  forall m n, m <= n -> f n = true -> f m = true.
+  forall m n, m <= n -> f n = tt -> f m = tt.
+
+lemma l1: downward_closed f → ∀ (r n: ℕ), f r = ff → f n = tt → n < r :=
+begin
+    intros h r n h1 h2,
+    have: ¬ n ≥ r,
+        intro,
+        have: f r = tt,
+            apply h,
+            apply a,
+            assumption,
+        simp * at *,
+    sorry,
+end
 
 -- k: an extra parameter to convince termination checker
 def binsearch : nat → nat → nat → nat
@@ -30,6 +43,11 @@ begin
     split,
         intro h2,
         induction (r - l),
+            unfold binsearch,
+            cases (to_bool (nat.succ l = r)),
+                unfold binsearch._match_1,
+                sorry,
+            unfold binsearch._match_1,
             sorry,
         sorry,
     sorry

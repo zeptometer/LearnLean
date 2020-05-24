@@ -51,8 +51,8 @@ lemma newmans_lemma {α : Type}
     (wf : well_founded r) :
     confluent r :=
     well_founded.fix wf begin
-        intros a ih b c blta cltb,
-        cases blta,
+        intros a ih b c r_b_a r_c_b,
+        cases r_b_a,
             case rtc.base {
                 existsi c,
                 constructor,
@@ -61,7 +61,7 @@ lemma newmans_lemma {α : Type}
             },
         -- main case
         case rtc.next : x rtc_r_b_x r_x_a {
-            cases cltb,
+            cases r_c_b,
                 case rtc.base {
                     existsi b,
                     constructor,
@@ -70,32 +70,31 @@ lemma newmans_lemma {α : Type}
                     assumption,
                     assumption
                 },
-            -- main case
-            case rtc.next : y rtc_r_c_y r_y_a {
-                -- step 1: Get d1 from weak confluence
-                have d1exists : ∃d1, rtc r d1 x ∧ rtc r d1 y := 
-                    wc r_x_a r_y_a,
-                cases d1exists with d1 rtc_r_d1_xandy,
-                cases rtc_r_d1_xandy with rtc_r_d1_x rtc_r_d1_y,
-                -- step 2: Get d2 from induction hypothesis
-                have d2exists : ∃d2, rtc r d2 b ∧ rtc r d2 d1 :=
-                    ih x r_x_a rtc_r_b_x rtc_r_d1_x,
-                cases d2exists with d2 rtc_r_d2_bandd1,
-                cases rtc_r_d2_bandd1 with rtc_r_d2_b rtc_r_d2_d1,
-                have rtc_r_d2_y : rtc r d2 y :=
-                    rtc_transitive rtc_r_d2_d1 rtc_r_d1_y,
-                -- step 3: Get d3 from induction hypothesis
-                have d3exists : ∃d3, rtc r d3 c ∧ rtc r d3 d2 :=
-                    ih y r_y_a rtc_r_c_y rtc_r_d2_y,
-                cases d3exists with d3 rtc_r_d3_candd2,
-                cases rtc_r_d3_candd2 with rtc_r_d3_c rtc_r_d3_d2,
-                -- step 4: Show d3 is the confluent point
-                existsi d3,
-                constructor, {
-                    exact rtc_transitive rtc_r_d3_d2 rtc_r_d2_b,
-                }, {
-                    assumption
-                }
+        -- main case
+        case rtc.next : y rtc_r_c_y r_y_a {
+            -- step 1: Get d1 from weak confluence
+            have d1exists : ∃d1, rtc r d1 x ∧ rtc r d1 y := 
+                wc r_x_a r_y_a,
+            cases d1exists with d1 rtc_r_d1_xandy,
+            cases rtc_r_d1_xandy with rtc_r_d1_x rtc_r_d1_y,
+            -- step 2: Get d2 from induction hypothesis
+            have d2exists : ∃d2, rtc r d2 b ∧ rtc r d2 d1 :=
+                ih x r_x_a rtc_r_b_x rtc_r_d1_x,
+            cases d2exists with d2 rtc_r_d2_bandd1,
+            cases rtc_r_d2_bandd1 with rtc_r_d2_b rtc_r_d2_d1,
+            have rtc_r_d2_y : rtc r d2 y :=
+                rtc_transitive rtc_r_d2_d1 rtc_r_d1_y,
+            -- step 3: Get d3 from induction hypothesis
+            have d3exists : ∃d3, rtc r d3 c ∧ rtc r d3 d2 :=
+                ih y r_y_a rtc_r_c_y rtc_r_d2_y,
+            cases d3exists with d3 rtc_r_d3_candd2,
+            cases rtc_r_d3_candd2 with rtc_r_d3_c rtc_r_d3_d2,
+            -- step 4: Show d3 is the confluent point
+            existsi d3,
+            split, {
+                exact rtc_transitive rtc_r_d3_d2 rtc_r_d2_b,
+            }, {
+                assumption
             }
-        }
+        }}
     end
